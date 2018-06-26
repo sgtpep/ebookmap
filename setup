@@ -15,7 +15,7 @@ function create-database {
   if ! sudo ls /var/lib/machines/ocitysmap/var/lib/maposmatic-database &> /dev/null; then
     sudo systemd-nspawn -q -M ocitysmap bash -eu"$-" << \EOF
     /etc/init.d/postgresql start
-    sudo -u postgres psql -c '\du' | grep -q ' maposmatic ' || sudo -u postgres createuser maposmatic
+    sudo -u postgres psql -c '\du' | grep -q ' maposmatic ' || sudo -u postgres psql -c "CREATE ROLE maposmatic LOGIN PASSWORD 'maposmatic'"
     sudo -u postgres psql -c '\l' | grep -q ' maposmatic ' || sudo -u postgres createdb -O maposmatic maposmatic
 EOF
     sudo touch /var/lib/machines/ocitysmap/var/lib/maposmatic-database
@@ -51,7 +51,8 @@ function setup-mapnik {
   [[ -d ./mapnik ]] || svn co https://svn.openstreetmap.org/applications/rendering/mapnik
   cd ./mapnik
   [[ -d ./world_boundaries ]] || ./get-coastlines.sh
-  [[ -f ./inc/datasource-settings.xml.inc ]] || python ./generate_xml.py --dbname=maposmatic --host=localhost --password='' --port=5432 --user=maposmatic
+  rm -f ./*.{bz2,tgz,zip}
+  [[ -f ./inc/datasource-settings.xml.inc ]] || python ./generate_xml.py --dbname=maposmatic --host=localhost --password=maposmatic --port=5432 --user=maposmatic
 EOF
 }
 
