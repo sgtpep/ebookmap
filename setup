@@ -25,11 +25,14 @@ EOF
 }
 
 function create-database {
-  sudo systemd-nspawn -q -M ocitysmap bash -eu"$-" << \EOF
-  /etc/init.d/postgresql start
-  sudo -u postgres psql -c '\du' | grep -q ' maposmatic ' || sudo -u postgres createuser maposmatic
-  sudo -u postgres psql -c '\l' | grep -q ' maposmatic ' || sudo -u postgres createdb -O maposmatic maposmatic
+  if ! sudo ls /var/lib/machines/ocitysmap/var/lib/maposmatic-database &> /dev/null; then
+    sudo systemd-nspawn -q -M ocitysmap bash -eu"$-" << \EOF
+    /etc/init.d/postgresql start
+    sudo -u postgres psql -c '\du' | grep -q ' maposmatic ' || sudo -u postgres createuser maposmatic
+    sudo -u postgres psql -c '\l' | grep -q ' maposmatic ' || sudo -u postgres createdb -O maposmatic maposmatic
 EOF
+    sudo touch /var/lib/machines/ocitysmap/var/lib/maposmatic-database
+  fi
 }
 
 function install-container-packages {
@@ -55,17 +58,20 @@ function setup-container {
 }
 
 function setup-postgis {
-  install-container-packages postgis
-  sudo systemd-nspawn -q -M ocitysmap bash -eu"$-" << \EOF
-  /etc/init.d/postgresql start
-  for path in /usr/share/postgresql/*/contrib/postgis-*/{postgis,spatial_ref_sys}.sql; do
-    sudo -u postgres psql -d maposmatic -f "$path"
-  done
-  for name in geometry_columns spatial_ref_sys; do
-    sudo -u postgres psql -c "ALTER TABLE $name OWNER TO maposmatic" -d maposmatic
-  done
-  sudo -u postgres psql -c 'CREATE EXTENSION IF NOT EXISTS hstore' -d maposmatic
+  if ! sudo ls /var/lib/machines/ocitysmap/var/lib/maposmatic-postgis &> /dev/null; then
+    install-container-packages postgis
+    sudo systemd-nspawn -q -M ocitysmap bash -eu"$-" << \EOF
+    /etc/init.d/postgresql start
+    for path in /usr/share/postgresql/*/contrib/postgis-*/{postgis,spatial_ref_sys}.sql; do
+      sudo -u postgres psql -d maposmatic -f "$path"
+    done
+    for name in geometry_columns spatial_ref_sys; do
+      sudo -u postgres psql -c "ALTER TABLE $name OWNER TO maposmatic" -d maposmatic
+    done
+    sudo -u postgres psql -c 'CREATE EXTENSION IF NOT EXISTS hstore' -d maposmatic
 EOF
+    sudo touch /var/lib/machines/ocitysmap/var/lib/maposmatic-postgis
+  fi
 }
 
 function setup-postgresql {
