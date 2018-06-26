@@ -1,13 +1,19 @@
 #!/usr/bin/env bash
 set -eu
 
+function copy-output {
+  mkdir -p ~/Downloads
+  sudo cp /var/lib/machines/ocitysmap/root/ocitysmap/citymap.pdf ~/Downloads/map.pdf
+  sudo chown "$USER": ~/Downloads/map.pdf
+}
+
 function main {
-  render-map "${1?An argument is required.}"
-  import-data
+  render-map "${@?An argument is required.}"
+  copy-output
 }
 
 function render-map {
-  sudo systemd-nspawn -q -M ocitysmap --chdir=/root bash -eu"$-" -c '/etc/init.d/postgresql start && ./ocitysmap/render.py "$@"' -- "$@"
+  sudo systemd-nspawn -q -M ocitysmap --chdir=/root/ocitysmap bash -eu"$-" -c '/etc/init.d/postgresql start && ./render.py -l multi_page "$@"' -- "$@"
 }
 
 main "$@"
