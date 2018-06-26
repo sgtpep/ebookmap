@@ -12,7 +12,7 @@ function bootstrap-container {
 }
 
 function configure-apt {
-  sudo tee /var/lib/machines/ocitysmap/etc/apt/apt.conf.d/50disable-cache <<< 'Binary::apt::APT::Keep-Downloaded-Packages "false";'
+  sudo tee /var/lib/machines/ocitysmap/etc/apt/apt.conf.d/50disable-cache > /dev/null <<< 'Binary::apt::APT::Keep-Downloaded-Packages "false";'
 }
 
 function configure-hosts {
