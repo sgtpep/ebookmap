@@ -15,15 +15,6 @@ function clone-ocitysmap {
   sudo ls /var/lib/machines/ocitysmap/root/ocitysmap &> /dev/null || sudo git -C /var/lib/machines/ocitysmap/root clone --depth=1 https://github.com/hholzgra/ocitysmap.git
 }
 
-function configure-autologin {
-  sudo mkdir -p /var/lib/machines/ocitysmap/etc/systemd/system/console-getty.service.d
-  sudo tee /var/lib/machines/ocitysmap/etc/systemd/system/console-getty.service.d/override.conf > /dev/null << \EOF
-[Service]
-ExecStart=
-ExecStart=-/sbin/agetty --autologin=root console $TERM
-EOF
-}
-
 function create-database {
   if ! sudo ls /var/lib/machines/ocitysmap/var/lib/maposmatic-database &> /dev/null; then
     sudo systemd-nspawn -q -M ocitysmap bash -eu"$-" << \EOF
@@ -54,7 +45,6 @@ function main {
 }
 
 function setup-container {
-  configure-autologin
   configure-hosts
   update-apt-cache
 }
