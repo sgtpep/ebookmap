@@ -27,8 +27,11 @@ function install-container-packages {
 }
 
 function install-packages {
-  ! command -v dpkg > /dev/null || dpkg -s "$@" &> /dev/null || sudo apt install -y "$@"
-  ! command -v pacman > /dev/null || pacman -Q "$@" &> /dev/null || sudo pacman -Sy --needed --noconfirm "$@"
+  if command -v dpkg > /dev/null; then
+    dpkg -s "$@" &> /dev/null || sudo apt install -y "$@"
+  elif command -v pacman > /dev/null; then
+    pacman -Q "$@" &> /dev/null || sudo pacman -Sy --needed --noconfirm "$@"
+  fi
 }
 
 function main {
