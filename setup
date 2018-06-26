@@ -11,10 +11,6 @@ function bootstrap-container {
   fi
 }
 
-function clone-ocitysmap {
-  sudo ls /var/lib/machines/ocitysmap/root/ocitysmap &> /dev/null || sudo git -C /var/lib/machines/ocitysmap/root clone --depth=1 https://github.com/hholzgra/ocitysmap.git
-}
-
 function create-database {
   if ! sudo ls /var/lib/machines/ocitysmap/var/lib/maposmatic-database &> /dev/null; then
     sudo systemd-nspawn -q -M ocitysmap bash -eu"$-" << \EOF
@@ -38,10 +34,9 @@ function install-packages {
 function main {
   bootstrap-container
   setup-container
-  clone-ocitysmap
   setup-postgresql
   setup-mapnik
-  install-container-packages osm2pgsql
+  setup-ocitysmap
 }
 
 function setup-container {
@@ -50,7 +45,20 @@ function setup-container {
 }
 
 function setup-mapnik {
-  install-container-packages python-mapnik
+  install-container-packages python-mapnik subversion unzip
+  sudo systemd-nspawn -q -M ocitysmap bash -eu"$-" << \EOF
+  cd ~
+  [[ -d ./mapnik ]] || svn co https://svn.openstreetmap.org/applications/rendering/mapnik
+  cd ./mapnik
+  [[ -d ./world_boundaries ]] || ./get-coastlines.sh
+  [[ -f ./inc/datasource-settings.xml.inc ]] || python ./generate_xml.py --dbname=maposmatic --host=localhost --password='' --port=5432 --user=maposmatic
+EOF
+}
+
+function setup-ocitysmap {
+  install-container-packages git
+  sudo ls /var/lib/machines/ocitysmap/root/ocitysmap &> /dev/null || sudo systemd-nspawn -q -M ocitysmap git -C /root clone --depth=1 https://github.com/hholzgra/ocitysmap.git
+  # TODO config
 }
 
 function setup-postgis {
@@ -71,7 +79,7 @@ EOF
 }
 
 function setup-postgresql {
-  install-container-packages postgresql postgresql-contrib sudo
+  install-container-packages osm2pgsql postgresql postgresql-contrib sudo
   create-database
   setup-postgis
 }
