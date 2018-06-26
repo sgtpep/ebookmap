@@ -1,7 +1,5 @@
 page size argument default
   pass overrided argument
-query osmid
-  sudo -u postgres psql -c "SELECT osm_id, name FROM planet_osm_polygon WHERE name ILIKE '%...%'" -d maposmatic
 
 install ttf-dejavu
 try smaller district

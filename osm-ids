@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -eu
+
+function main {
+  query-osm-id "$1"
+}
+
+function query-osm-id {
+  sudo systemd-nspawn -q -M ocitysmap --chdir=/root/ocitysmap bash -eu"$-" -c '
+  /etc/init.d/postgresql start
+  sudo -i -u postgres psql -c "SELECT osm_id, name FROM planet_osm_polygon WHERE name ILIKE '\''%$1%'\''" -d maposmatic
+  ' -- "$1"
+}
+
+main "$@"
