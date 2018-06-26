@@ -1,12 +1,15 @@
 render
   ./render.py -t "Ceci n'est pas Paris" --osmid=-411354
-    query osmid
+query osmid
+  select osm_id, name from planet_osm_polygon where name ilike '%...%';
 
 try smaller district
 readme
   requirements
-    systemd linux
+    linux
+    systemd-nspawn
     debootstrap if not debian/ubuntu/arch
   usage
   screenshots
   sample pdf
+  credits and resources
