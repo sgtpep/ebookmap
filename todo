@@ -1,9 +1,14 @@
 render
   ./render.py -t "Ceci n'est pas Paris" --osmid=-411354
+page size argument
 query osmid
   select osm_id, name from planet_osm_polygon where name ilike '%...%';
 
+install ttf-dejavu
 try smaller district
+show house numbers
+halo on house numbers
+
 readme
   requirements
     linux
@@ -13,3 +18,6 @@ readme
   screenshots
   sample pdf
   credits and resources
+
+remove paddings
+links
