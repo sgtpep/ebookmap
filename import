@@ -24,7 +24,7 @@ EOF
 }
 
 function main {
-  download-data "${1?URL is required.}"
+  download-data "${1?A URL is required.}"
   import-data
 }
 
