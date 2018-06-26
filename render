@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -eu
+
+function main {
+  render-map "${1?An argument is required.}"
+  import-data
+}
+
+function render-map {
+  sudo systemd-nspawn -q -M ocitysmap --chdir=/root bash -eu"$-" -c '/etc/init.d/postgresql start && ./ocitysmap/render.py "$@"' -- "$@"
+}
+
+main "$@"
