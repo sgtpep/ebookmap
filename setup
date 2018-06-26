@@ -15,6 +15,10 @@ function configure-hosts {
   sudo sed -i 's/\tlocalhost$/\0 ocitysmap/' /var/lib/machines/ocitysmap/etc/hosts
 }
 
+function configure-locale {
+  sudo tee /var/lib/machines/ocitysmap/etc/profile.d/locale.sh > /dev/null <<< 'export LANG=C.UTF-8'
+}
+
 function create-database {
   if ! sudo ls /var/lib/machines/ocitysmap/var/lib/maposmatic-database &> /dev/null; then
     sudo systemd-nspawn -q -M ocitysmap bash -eu"$-" << \EOF
@@ -48,6 +52,7 @@ function main {
 
 function setup-container {
   configure-hosts
+  configure-locale
   update-apt-cache
 }
 
