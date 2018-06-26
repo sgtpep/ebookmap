@@ -12,8 +12,7 @@ function bootstrap-container {
 }
 
 function clone-ocitysmap {
-  #[[ -d ~/ocitysmap/root/ocitysmap ]] || sudo git -C ~/ocitysmap/root clone --depth=1 https://github.com/hholzgra/ocitysmap.git
-  :
+  sudo ls /var/lib/machines/ocitysmap/root/ocitysmap &> /dev/null || sudo git -C /var/lib/machines/ocitysmap/root clone --depth=1 https://github.com/hholzgra/ocitysmap.git
 }
 
 function install-packages {
@@ -23,8 +22,7 @@ function install-packages {
 
 function main {
   bootstrap-container
-#  clone-ocitysmap
-  :
+  clone-ocitysmap
 }
 
 main "$@"
