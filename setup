@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -eu
+
+function bootstrap-container {
+  install-packages debian-archive-keyring debootstrap
+  if ! ls /var/lib/machines/ocitysmap &> /dev/null; then
+    if ! sudo debootstrap stretch /var/lib/machines/ocitysmap; then
+      sudo rm -fr /var/lib/machines/ocitysmap
+      return 1
+    fi
+  fi
+}
+
+function clone-ocitysmap {
+  #[[ -d ~/ocitysmap/root/ocitysmap ]] || sudo git -C ~/ocitysmap/root clone --depth=1 https://github.com/hholzgra/ocitysmap.git
+  :
+}
+
+function install-packages {
+  ! command -v dpkg > /dev/null || dpkg -s "$@" &> /dev/null || sudo apt install -y "$@"
+  ! command -v pacman > /dev/null || pacman -Q "$@" &> /dev/null || sudo pacman -Sy --needed --noconfirm "$@"
+}
+
+function main {
+  bootstrap-container
+#  clone-ocitysmap
+  :
+}
+
+main "$@"
