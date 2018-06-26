@@ -1,8 +1,7 @@
-render
-  ./render.py -t "Ceci n'est pas Paris" --osmid=-411354
-page size argument
+page size argument default
+  pass overrided argument
 query osmid
-  select osm_id, name from planet_osm_polygon where name ilike '%...%';
+  sudo -u postgres psql -c "SELECT osm_id, name FROM planet_osm_polygon WHERE name ILIKE '%...%'" -d maposmatic
 
 install ttf-dejavu
 try smaller district
