@@ -19,6 +19,11 @@ function configure-hosts {
   sudo sed -i 's/\tlocalhost$/\0 ocitysmap/' /var/lib/machines/ocitysmap/etc/hosts
 }
 
+function configure-mapnik {
+  sudo ls /var/lib/machines/ocitysmap/root/mapnik/inc/datasource-settings.xml.inc &> /dev/null || run-nspawn-bash -c 'cd ./mapnik && python ./generate_xml.py --dbname=maposmatic --host=localhost --password=maposmatic --port=5432 --user=maposmatic'
+  sudo sed -i 's/\(scale_zoom\)17/\115/; s/\(<TextSymbolizer \)\(size\)/\1halo-fill="white" halo-radius="1"\2/' /var/lib/machines/ocitysmap/root/mapnik/inc/layer-addressing.xml.inc
+}
+
 function configure-ocitysmap {
   sudo cp /var/lib/machines/ocitysmap/root/{ocitysmap/ocitysmap.conf.dist,.ocitysmap.conf}
   sudo sed -i 's/\(^available_stylesheets: \).*/\1stylesheet_osm1/; s/\(^password=\).*/\1maposmatic/; s|\(^path: \).*/mapnik.*|\1/root/mapnik/osm.xml|' /var/lib/machines/ocitysmap/root/.ocitysmap.conf
@@ -89,13 +94,13 @@ function setup-locale {
 
 function setup-mapnik {
   install-container-packages python-mapnik subversion unzip
+  sudo ls /var/lib/machines/ocitysmap/root/mapnik &> /dev/null || run-nspawn svn co https://svn.openstreetmap.org/applications/rendering/mapnik
   run-nspawn-bash << \EOF
-  [[ -d ./mapnik ]] || svn co https://svn.openstreetmap.org/applications/rendering/mapnik
   cd ./mapnik
   [[ -d ./world_boundaries ]] || ./get-coastlines.sh
   rm -f ./*.{bz2,tgz,zip}
-  [[ -f ./inc/datasource-settings.xml.inc ]] || python ./generate_xml.py --dbname=maposmatic --host=localhost --password=maposmatic --port=5432 --user=maposmatic
 EOF
+  configure-mapnik
 }
 
 function setup-ocitysmap {
