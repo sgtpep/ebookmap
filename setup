@@ -16,7 +16,9 @@ function configure-hosts {
 }
 
 function configure-locale {
-  sudo tee /var/lib/machines/ocitysmap/etc/profile.d/locale.sh > /dev/null <<< 'export LANG=C.UTF-8'
+  sudo sed -i 's/^# \(en_US\.UTF-8 \)/\1/' /var/lib/machines/ocitysmap/etc/locale.gen
+  sudo ls /var/lib/machines/ocitysmap/usr/lib/locale/locale-archive &> /dev/null || run-nspawn bash -l locale-gen
+  sudo tee /var/lib/machines/ocitysmap/etc/profile.d/locale.sh > /dev/null <<< 'export LANG=en_US.UTF-8'
 }
 
 function configure-ocitysmap {
