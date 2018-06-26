@@ -1,6 +1,3 @@
-import
-  download .osm.pbf
-  osm2pgsql -s -a -d maposmatic -m -U maposmatic -W -H localhost -k ile-de-france.osm.bz2
 render
   ./render.py -t "Ceci n'est pas Paris" --osmid=-411354
     query osmid

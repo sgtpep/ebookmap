@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -eu
+
+function download-data {
+  sudo sh -c 'rm -f /var/lib/machines/ocitysmap/var/tmp/data*'
+  local extension=$(get-extension "$1")
+  if command -v curl > /dev/null; then
+    sudo curl -L -o /var/lib/machines/ocitysmap/var/tmp/data"$extension" "$1"
+  elif command -v wget > /dev/null; then
+    sudo wget -O /var/lib/machines/ocitysmap/var/tmp/data"$extension" "$1"
+  fi
+}
+
+function get-extension {
+  local filename=${1##*/}
+  [[ $filename != *.* ]] || echo ".${filename#*.}"
+}
+
+function import-data {
+  sudo systemd-nspawn -q -M ocitysmap bash -eu"$-" << \EOF
+  /etc/init.d/postgresql start || /etc/init.d/postgresql start
+  echo maposmatic | osm2pgsql -Wc -H localhost -U maposmatic -d maposmatic -k /var/tmp/data*
+EOF
+}
+
+function main {
+  download-data "${1?URL is required.}"
+  import-data
+}
+
+main "$@"
