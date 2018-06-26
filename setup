@@ -11,6 +11,10 @@ function bootstrap-container {
   fi
 }
 
+function configure-apt {
+  sudo tee /var/lib/machines/ocitysmap/etc/apt/apt.conf.d/50disable-cache <<< 'Binary::apt::APT::Keep-Downloaded-Packages "false";'
+}
+
 function configure-hosts {
   sudo sed -i 's/\tlocalhost$/\0 ocitysmap/' /var/lib/machines/ocitysmap/etc/hosts
 }
@@ -70,6 +74,7 @@ function run-nspawn-bash {
 }
 
 function setup-container {
+  configure-apt
   configure-hosts
   update-apt-cache
 }
