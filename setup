@@ -15,12 +15,6 @@ function configure-hosts {
   sudo sed -i 's/\tlocalhost$/\0 ocitysmap/' /var/lib/machines/ocitysmap/etc/hosts
 }
 
-function configure-locale {
-  sudo sed -i 's/^# \(en_US\.UTF-8 \)/\1/' /var/lib/machines/ocitysmap/etc/locale.gen
-  sudo ls /var/lib/machines/ocitysmap/usr/lib/locale/locale-archive &> /dev/null || run-nspawn bash -l locale-gen
-  sudo tee /var/lib/machines/ocitysmap/etc/profile.d/locale.sh > /dev/null <<< 'export LANG=en_US.UTF-8'
-}
-
 function configure-ocitysmap {
   sudo cp /var/lib/machines/ocitysmap/root/{ocitysmap/ocitysmap.conf.dist,.ocitysmap.conf}
   sudo sed -i 's/\(^available_stylesheets: \).*/\1stylesheet_osm1/; s/\(^password=\).*/\1maposmatic/; s|\(^path: \).*/mapnik.*|\1/root/mapnik/osm.xml|' /var/lib/machines/ocitysmap/root/.ocitysmap.conf
@@ -60,6 +54,7 @@ function install-pip-packages {
 function main {
   bootstrap-container
   setup-container
+  setup-locale
   setup-postgresql
   setup-mapnik
   setup-ocitysmap
@@ -76,8 +71,14 @@ function run-nspawn-bash {
 
 function setup-container {
   configure-hosts
-  configure-locale
   update-apt-cache
+}
+
+function setup-locale {
+  install-container-packages locales
+  sudo sed -i 's/^# \(en_US\.UTF-8 \)/\1/' /var/lib/machines/ocitysmap/etc/locale.gen
+  sudo ls /var/lib/machines/ocitysmap/usr/lib/locale/locale-archive &> /dev/null || run-nspawn bash -l locale-gen
+  sudo tee /var/lib/machines/ocitysmap/etc/profile.d/locale.sh > /dev/null <<< 'export LANG=en_US.UTF-8'
 }
 
 function setup-mapnik {
