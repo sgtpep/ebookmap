@@ -14,7 +14,10 @@ function main {
 }
 
 function render-map {
-  sudo systemd-nspawn -q -M ocitysmap --chdir=/root/ocitysmap bash -eu"$-" -c '/etc/init.d/postgresql start && ./render.py -l multi_page "$@"' -- "$@"
+  sudo systemd-nspawn -q -M ocitysmap --chdir=/root/ocitysmap bash -eu"$-" -c '
+  /etc/init.d/postgresql start
+  ./render.py -l multi_page "$@"
+  ' -- "$@"
 }
 
 main "$@"
