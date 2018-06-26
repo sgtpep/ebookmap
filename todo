@@ -1,5 +1,13 @@
-show house numbers
-halo on house numbers
+show roads
+remove paddings
+try navigation in ebook
+  index
+  toc
+clickable links
+  try in ebook
+  overview
+  edges
+  index
 
 readme
   requirements
@@ -10,6 +18,3 @@ readme
   screenshots
   sample pdf
   credits and resources
-
-remove paddings
-links
