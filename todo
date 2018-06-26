@@ -1,5 +1,3 @@
-'Installation of OCitySMap'
-
 import
   download .osm.pbf
   osm2pgsql -s -a -d maposmatic -m -U maposmatic -W -H localhost -k ile-de-france.osm.bz2

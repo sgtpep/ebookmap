@@ -56,9 +56,9 @@ EOF
 }
 
 function setup-ocitysmap {
-  install-container-packages git
+  install-container-packages git python-cairo python-gdal python-gtk2 python-psycopg2 python-shapely
   sudo ls /var/lib/machines/ocitysmap/root/ocitysmap &> /dev/null || sudo systemd-nspawn -q -M ocitysmap git -C /root clone --depth=1 https://github.com/hholzgra/ocitysmap.git
-  # TODO config
+  sudo cp /var/lib/machines/ocitysmap/root{/ocitysmap/ocitysmap.conf.dist,.ocitysmap.conf}
 }
 
 function setup-postgis {
