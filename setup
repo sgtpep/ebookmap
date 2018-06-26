@@ -49,12 +49,18 @@ function main {
   setup-container
   clone-ocitysmap
   setup-postgresql
+  setup-mapnik
+  install-container-packages osm2pgsql
 }
 
 function setup-container {
   configure-autologin
   configure-hosts
   update-apt-cache
+}
+
+function setup-mapnik {
+  install-container-packages python-mapnik
 }
 
 function setup-postgis {

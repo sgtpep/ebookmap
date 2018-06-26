@@ -1,4 +1,7 @@
-postgresql setup flag
-setup-container
-clone-ocitysmap
+'Install Mapnik-OSM'
+'Installation of OCitySMap'
+
+osm2pgsql -s -a -d maposmatic -m -U maposmatic -W -H localhost -k ile-de-france.osm.bz2
+./render.py -t "Ceci n'est pas Paris" --osmid=-411354
+
 try smaller district
