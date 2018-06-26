@@ -3,7 +3,7 @@ set -eu
 
 function bootstrap-container {
   install-packages debian-archive-keyring debootstrap
-  if ! ls /var/lib/machines/ocitysmap &> /dev/null; then
+  if ! sudo ls /var/lib/machines/ocitysmap &> /dev/null; then
     if ! sudo debootstrap stretch /var/lib/machines/ocitysmap; then
       sudo rm -fr /var/lib/machines/ocitysmap
       return 1
