@@ -15,6 +15,10 @@ function clone-ocitysmap {
   sudo ls /var/lib/machines/ocitysmap/root/ocitysmap &> /dev/null || sudo git -C /var/lib/machines/ocitysmap/root clone --depth=1 https://github.com/hholzgra/ocitysmap.git
 }
 
+function install-container-packages {
+  sudo systemd-nspawn -M ocitysmap bash -l -c 'dpkg -s "$@" &> /dev/null || apt install -y "$@"' -- "$@"
+}
+
 function install-packages {
   ! command -v dpkg > /dev/null || dpkg -s "$@" &> /dev/null || sudo apt install -y "$@"
   ! command -v pacman > /dev/null || pacman -Q "$@" &> /dev/null || sudo pacman -Sy --needed --noconfirm "$@"
@@ -22,7 +26,27 @@ function install-packages {
 
 function main {
   bootstrap-container
+  setup-container
+  install-container-packages postgresql postgresql-contrib
   clone-ocitysmap
+}
+
+function setup-autologin {
+  sudo mkdir -p /var/lib/machines/ocitysmap/etc/systemd/system/console-getty.service.d
+  sudo tee /var/lib/machines/ocitysmap/etc/systemd/system/console-getty.service.d/override.conf > /dev/null << \EOF
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin=root console $TERM
+EOF
+}
+
+function setup-container {
+  setup-autologin
+  update-apt-cache
+}
+
+function update-apt-cache {
+  sudo ls /var/lib/machines/ocitysmap/var/cache/apt/pkgcache.bin &> /dev/null || sudo systemd-nspawn -M ocitysmap apt update
 }
 
 main "$@"
