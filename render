@@ -5,6 +5,7 @@ function copy-output {
   mkdir -p ~/Downloads
   sudo cp /var/lib/machines/ocitysmap/root/ocitysmap/citymap.pdf ~/Downloads/map.pdf
   sudo chown "$USER": ~/Downloads/map.pdf
+  echo 'Output: ~/Downloads/map.pdf'
 }
 
 function main {
