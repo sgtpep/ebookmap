@@ -21,7 +21,7 @@ function configure-hosts {
 
 function configure-mapnik {
   sudo ls /var/lib/machines/ocitysmap/root/mapnik/inc/datasource-settings.xml.inc &> /dev/null || run-nspawn-bash -c 'cd ./mapnik && python ./generate_xml.py --dbname=maposmatic --host=localhost --password=maposmatic --port=5432 --user=maposmatic'
-  sudo sed -i 's/\(scale_zoom\)17/\115/; s/\(<TextSymbolizer \)\(size\)/\1halo-fill="white" halo-radius="1"\2/' /var/lib/machines/ocitysmap/root/mapnik/inc/layer-addressing.xml.inc
+  sudo sed -i 's/\(&maxscale_zoom\)17/\115/; s/\(<TextSymbolizer \)\(size\)/\1halo-radius="1" \2/' /var/lib/machines/ocitysmap/root/mapnik/inc/layer-addressing.xml.inc
 }
 
 function configure-ocitysmap {
