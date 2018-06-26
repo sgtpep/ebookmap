@@ -19,6 +19,11 @@ function configure-locale {
   sudo tee /var/lib/machines/ocitysmap/etc/profile.d/locale.sh > /dev/null <<< 'export LANG=C.UTF-8'
 }
 
+function configure-ocitysmap {
+  sudo cp /var/lib/machines/ocitysmap/root/{ocitysmap/ocitysmap.conf.dist,.ocitysmap.conf}
+  sudo sed -i 's/\(^available_stylesheets: \).*/\1stylesheet_osm1/; s/\(^password=\).*/\1maposmatic/; s|\(^path: \).*/mapnik.*|\1/root/mapnik/osm.xml|' /var/lib/machines/ocitysmap/root/.ocitysmap.conf
+}
+
 function create-database {
   if ! sudo ls /var/lib/machines/ocitysmap/var/lib/maposmatic-database &> /dev/null; then
     sudo systemd-nspawn -q -M ocitysmap bash -eu"$-" << \EOF
