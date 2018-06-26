@@ -26,7 +26,7 @@ function configure-ocitysmap {
 
 function create-database {
   if ! sudo ls /var/lib/machines/ocitysmap/var/lib/maposmatic-database &> /dev/null; then
-    sudo systemd-nspawn -q -M ocitysmap bash -eu"$-" << \EOF
+    run-nspawn-bash << \EOF
     /etc/init.d/postgresql start
     sudo -u postgres psql -c '\du' | grep -q ' maposmatic ' || sudo -u postgres psql -c "CREATE ROLE maposmatic LOGIN PASSWORD 'maposmatic'"
     sudo -u postgres psql -c '\l' | grep -q ' maposmatic ' || sudo -u postgres createdb -O maposmatic maposmatic
@@ -36,7 +36,7 @@ EOF
 }
 
 function install-container-packages {
-  sudo systemd-nspawn -q -M ocitysmap bash -l -c 'dpkg -s "$@" &> /dev/null || apt install -y "$@"' -- "$@"
+  run-nspawn-bash -l -c 'dpkg -s "$@" &> /dev/null || apt install -y "$@"' -- "$@"
 }
 
 function install-packages {
@@ -47,12 +47,29 @@ function install-packages {
   fi
 }
 
+function install-pip-packages {
+  install-container-packages python-pip
+  local name
+  for name; do
+    sudo sh -c 'ls /var/lib/machines/ocitysmap/usr/local/lib/python2.7/dist-packages/"$1"-* &> /dev/null' -- "$name" || run-nspawn pip install "$name"
+  done
+}
+
 function main {
   bootstrap-container
   setup-container
   setup-postgresql
   setup-mapnik
   setup-ocitysmap
+}
+
+function run-nspawn {
+  command -v systemd-nspawn &> /dev/null || install-packages systemd-container
+  sudo systemd-nspawn -q -M ocitysmap --chdir=/root "$@"
+}
+
+function run-nspawn-bash {
+  run-nspawn bash -eu"$-" "$@"
 }
 
 function setup-container {
@@ -63,8 +80,7 @@ function setup-container {
 
 function setup-mapnik {
   install-container-packages python-mapnik subversion unzip
-  sudo systemd-nspawn -q -M ocitysmap bash -eu"$-" << \EOF
-  cd ~
+  run-nspawn-bash << \EOF
   [[ -d ./mapnik ]] || svn co https://svn.openstreetmap.org/applications/rendering/mapnik
   cd ./mapnik
   [[ -d ./world_boundaries ]] || ./get-coastlines.sh
@@ -74,15 +90,16 @@ EOF
 }
 
 function setup-ocitysmap {
-  install-container-packages git python-cairo python-gdal python-gtk2 python-psycopg2 python-shapely
-  sudo ls /var/lib/machines/ocitysmap/root/ocitysmap &> /dev/null || sudo systemd-nspawn -q -M ocitysmap git -C /root clone --depth=1 https://github.com/hholzgra/ocitysmap.git
-  sudo cp /var/lib/machines/ocitysmap/root{/ocitysmap/ocitysmap.conf.dist,.ocitysmap.conf}
+  install-container-packages git python-{cairo,gdal,gtk2,psycopg2,qrcode,rsvg,shapely}
+  install-pip-packages colour pluginbase
+  sudo ls /var/lib/machines/ocitysmap/root/ocitysmap &> /dev/null || run-nspawn git -C /root clone --depth=1 https://github.com/hholzgra/ocitysmap.git
+  configure-ocitysmap
 }
 
 function setup-postgis {
   if ! sudo ls /var/lib/machines/ocitysmap/var/lib/maposmatic-postgis &> /dev/null; then
     install-container-packages postgis
-    sudo systemd-nspawn -q -M ocitysmap bash -eu"$-" << \EOF
+    run-nspawn-bash << \EOF
     /etc/init.d/postgresql start
     for path in /usr/share/postgresql/*/contrib/postgis-*/{postgis,spatial_ref_sys}.sql; do
       sudo -u postgres psql -d maposmatic -f "$path"
@@ -103,7 +120,7 @@ function setup-postgresql {
 }
 
 function update-apt-cache {
-  sudo ls /var/lib/machines/ocitysmap/var/cache/apt/pkgcache.bin &> /dev/null || sudo systemd-nspawn -q -M ocitysmap apt update
+  sudo ls /var/lib/machines/ocitysmap/var/cache/apt/pkgcache.bin &> /dev/null || run-nspawn apt update
 }
 
 main "$@"
