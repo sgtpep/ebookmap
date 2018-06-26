@@ -15,6 +15,15 @@ function clone-ocitysmap {
   sudo ls /var/lib/machines/ocitysmap/root/ocitysmap &> /dev/null || sudo git -C /var/lib/machines/ocitysmap/root clone --depth=1 https://github.com/hholzgra/ocitysmap.git
 }
 
+function configure-autologin {
+  sudo mkdir -p /var/lib/machines/ocitysmap/etc/systemd/system/console-getty.service.d
+  sudo tee /var/lib/machines/ocitysmap/etc/systemd/system/console-getty.service.d/override.conf > /dev/null << \EOF
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin=root console $TERM
+EOF
+}
+
 function install-container-packages {
   sudo systemd-nspawn -M ocitysmap bash -l -c 'dpkg -s "$@" &> /dev/null || apt install -y "$@"' -- "$@"
 }
@@ -27,22 +36,27 @@ function install-packages {
 function main {
   bootstrap-container
   setup-container
-  install-container-packages postgresql postgresql-contrib
   clone-ocitysmap
-}
-
-function setup-autologin {
-  sudo mkdir -p /var/lib/machines/ocitysmap/etc/systemd/system/console-getty.service.d
-  sudo tee /var/lib/machines/ocitysmap/etc/systemd/system/console-getty.service.d/override.conf > /dev/null << \EOF
-[Service]
-ExecStart=
-ExecStart=-/sbin/agetty --autologin=root console $TERM
-EOF
+  setup-postgresql
 }
 
 function setup-container {
-  setup-autologin
+  configure-autologin
+  configure-hosts
   update-apt-cache
+}
+
+function setup-postgresql {
+  install-container-packages postgis postgresql postgresql-contrib sudo
+  sudo systemd-nspawn -M ocitysmap bash -eu"$-" << \EOF
+  /etc/init.d/postgresql start
+  sudo -u postgres psql -c '\du' | grep -q ' maposmatic ' || sudo -u postgres createuser maposmatic
+  sudo -u postgres psql -c '\l' | grep -q ' maposmatic ' || sudo -u postgres createdb -O maposmatic maposmatic
+EOF
+}
+
+function configure-hosts {
+  sudo sed -i 's/\tlocalhost$/\0 ocitysmap/' /var/lib/machines/ocitysmap/etc/hosts
 }
 
 function update-apt-cache {
