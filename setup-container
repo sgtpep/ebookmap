@@ -22,6 +22,7 @@ function configure-hosts {
 function configure-mapnik {
   sudo ls /var/lib/machines/ocitysmap/root/mapnik/inc/datasource-settings.xml.inc &> /dev/null || run-nspawn-bash -c 'cd ./mapnik && python ./generate_xml.py --dbname=maposmatic --host=localhost --password=maposmatic --port=5432 --user=maposmatic'
   sudo sed -i 's/\(&maxscale_zoom\)17/\115/; s/\(<TextSymbolizer \)\(size\)/\1halo-radius="1" \2/' /var/lib/machines/ocitysmap/root/mapnik/inc/layer-addressing.xml.inc
+  sudo sed -i 's/\( \)\(<Filter>\[amenity\] = '\''parking'\''\)/\1\&minscale_zoom1;\2/' /var/lib/machines/ocitysmap/root/mapnik/inc/layer-amenity-points.xml.inc
   sudo sed -i 's/^&layer-shapefiles;$/<!--\0-->/' /var/lib/machines/ocitysmap/root/mapnik/osm.xml
   sudo perl -0p -e 's/(<Filter>\[highway\] = '\''unclassified'\''.+?&minscale_zoom)15(.+?<TextSymbolizer )(size)/${1}16$2allow-overlap="true" $3/s' -i /var/lib/machines/ocitysmap/root/mapnik/osm.xml
 }
