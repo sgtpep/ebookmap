@@ -1,7 +1,9 @@
 index as toc
-  '[ /Page 2 /Title (Foo bar) /View [/XYZ null null null] /OUT pdfmark'
+  try on ebook
+parking
 clickable links
   sudo systemd-nspawn -M ocitysmap --chdir=/root gs -o ./map.pdf -sDEVICE=pdfwrite -c '[ /Page 2 /Rect [0 425 295 465] /SrcPg 1 /Subtype /Link /ANN pdfmark' -f ./ocitysmap/citymap.pdf; sudo cp /var/lib/machines/ocitysmap/root/map.pdf ~/Downloads/map2.pdf
+  preserve toc
   overview
   edges
   index
