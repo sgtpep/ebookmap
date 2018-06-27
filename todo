@@ -1,9 +1,16 @@
-index as toc
+https://stackoverflow.com/a/12884081
+https://stackoverflow.com/q/50971672
+https://stackoverflow.com/a/25808569
+sudo systemd-nspawn -M ocitysmap --chdir=/root gs -o./map.pdf -c '[ /Rect [0 425 295 465] /Border [0 0 2] /Color [.7 0 0] /Page 1 /Subtype /Link /ANN pdfmark' -f ./ocitysmap/citymap.pdf -sDEVICE=pdfwrite && sudo cp /var/lib/machines/ocitysmap/root/map.pdf ~/Downloads/map2.pdf
+
 clickable links
   try in ebook
   overview
   edges
   index
+index as toc
+  https://www.pdflabs.com/blog/export-and-import-pdf-bookmarks/
+  https://www.donarmstrong.com/posts/adding_toc_to_pdfs_in_R/
 
 readme
   requirements
@@ -19,3 +26,4 @@ readme
   screenshots
   sample pdf
   credits and resources
+try the whole city
