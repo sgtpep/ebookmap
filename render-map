@@ -16,8 +16,10 @@ function main {
 function render-map {
   sudo systemd-nspawn -q -M ocitysmap --chdir=/root/ocitysmap bash -eu"$-" -c '
   /etc/init.d/postgresql start
-  if [[ $# == 1 && $1 != -* ]]; then
-    set -- -t "$1" --osmid="$(sudo -i -u postgres psql -A -c "SELECT osm_id FROM planet_osm_polygon WHERE name ILIKE '\''%$1%'\'' LIMIT 1" -d maposmatic | sed -n '2p')"
+  if [[ ${1-} && $1 != -* ]]; then
+    name=$1
+    shift
+    set -- -t "$name" --osmid="$(sudo -i -u postgres psql -A -c "SELECT osm_id FROM planet_osm_polygon WHERE name ILIKE '\''%$name%'\'' LIMIT 1" -d maposmatic | sed -n '2p')" "$@"
   fi
   ./render.py -l multi_page --paper-format="Din A5" "$@"
   ' -- "$@"
