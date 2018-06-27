@@ -101,7 +101,7 @@ def generate(categories):
       items = [item for item in category.items if item.label]
       file.write('[ /Count {} /Title <{}> /OUT pdfmark\n'.format(len(items), encode(category.name)))
       for item in items:
-        file.write('[ /Page {} /Title <{}> /OUT pdfmark\n'.format(item.page_number, encode('{}, {}'.format(item.label, item.location_str.split(', ')[-1]))))
+        file.write('[ /Page {} /Title <{}> /OUT pdfmark\n'.format(item.page_number, encode('{} ({})'.format(item.label, item.location_str.split(', ')[-1]))))
 EOF
 }
 
