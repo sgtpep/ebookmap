@@ -1,6 +1,6 @@
-try navigation in ebook
-  index
-  toc
+remove two pages
+  shift page nums
+index as toc
 clickable links
   try in ebook
   overview
@@ -9,10 +9,15 @@ clickable links
 
 readme
   requirements
+    2G min
     linux
     systemd-nspawn
     debootstrap if not debian/ubuntu/arch
   usage
+  features
+    vector
+    clickable navigation
+    all dependencies encapsulated in container, containerized dependencies
   screenshots
   sample pdf
   credits and resources
