@@ -104,6 +104,7 @@ function run-nspawn-bash {
 function setup-container {
   configure-apt
   configure-hosts
+  install-packages ghostscript
   update-apt-cache
 }
 
