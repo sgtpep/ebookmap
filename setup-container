@@ -79,7 +79,8 @@ function patch-ocitysmap {
   sudo sed -i 's/\( PRINT_SAFE_MARGIN_PT = \).*/\10/' /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/abstract_renderer.py
   sudo sed -i -f - /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/multi_page_renderer.py << \EOF
   s/\( \)\(self\._render_\(blank\|front\)_page(\)/\1#\2/
-  s/\(  \)\(map_canvas\.add_shape_file(\(grid_shape\|shade\|shade_contour\)\b\)/\1False and \2/
+  s/\(  \)\(map_canvas\.add_shape_file(\(shade\|shade_contour\)\b\)/\1False and \2/
+  s/\bself\.rc\.stylesheet\.grid_line_width\b/0.1/
   s/\(\.render_page_number(ctx, \)3\b/\11/
   s/\( unicode(idx+\)4\b/\12/
   s/\( map_number+\)4\b/\12/
