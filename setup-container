@@ -72,6 +72,7 @@ function main {
 
 function patch-ocitysmap {
   sudo sed -i 's/\( PRINT_SAFE_MARGIN_PT = \).*/\10/' /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/abstract_renderer.py
+  sudo sed -i 's/\(  \)\(map_canvas\.add_shape_file(\(grid_shape\|shade\|shade_contour\)\b\)/\1False and \2/' /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/multi_page_renderer.py
   sudo sed -i "s/\(\[\)\(('Din A4'\)/\1('Din A5', 148, 210), \2/" /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/__init__.py
 }
 
