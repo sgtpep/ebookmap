@@ -88,8 +88,20 @@ function patch-ocitysmap {
   s/\( nb_previous_pages = \)4/\12/
   s/\(  map_number+\)5/\13/
   s/\( page_number=(i + \)4/\12/
+  s/\(  \)\(mpsir = MultiPageStreetIndexRenderer\b\)/\1import toc; toc.generate(self.index_categories); \2/
 EOF
   sudo sed -i "s/\(\[\)\(('Din A4'\)/\1('Din A5', 148, 210), \2/" /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/__init__.py
+  sudo tee /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/toc.py > /dev/null << \EOF
+def encode(string):
+  return ''.join('{:02X}'.format(ord(byte)) for byte in '\xfe\xff' + string.encode('utf-16-be'))
+def generate(categories):
+  with open('./toc.ps', 'w') as file:
+    for category in categories:
+      items = [item for item in category.items if item.label]
+      file.write('[ /Count {} /Title <{}> /OUT pdfmark\n'.format(len(items), encode(category.name)))
+      for item in items:
+        file.write('[ /Page {} /Title <{}> /OUT pdfmark\n'.format(item.page_number, encode('{}, {}'.format(item.label, item.location_str.split(', ')[-1]))))
+EOF
 }
 
 function run-nspawn {
@@ -104,7 +116,7 @@ function run-nspawn-bash {
 function setup-container {
   configure-apt
   configure-hosts
-  install-packages ghostscript
+  install-container-packages ghostscript
   update-apt-cache
 }
 
