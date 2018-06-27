@@ -28,7 +28,6 @@ function configure-mapnik {
 function configure-ocitysmap {
   sudo cp /var/lib/machines/ocitysmap/root/{ocitysmap/ocitysmap.conf.dist,.ocitysmap.conf}
   sudo sed -i 's/\(^available_stylesheets: \).*/\1stylesheet_osm1/; s/\(^password=\).*/\1maposmatic/; s|\(^path: \).*/mapnik.*|\1/root/mapnik/osm.xml|' /var/lib/machines/ocitysmap/root/.ocitysmap.conf
-  sudo sed -i "s/\(\[\)\(('Din A4'\)/\1('Din A5', 148, 210), \2/" /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/__init__.py
 }
 
 function create-database {
@@ -71,6 +70,11 @@ function main {
   setup-ocitysmap
 }
 
+function patch-ocitysmap {
+  sudo sed -i 's/\( PRINT_SAFE_MARGIN_PT = \).*/\10/' /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/abstract_renderer.py
+  sudo sed -i "s/\(\[\)\(('Din A4'\)/\1('Din A5', 148, 210), \2/" /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/__init__.py
+}
+
 function run-nspawn {
   command -v systemd-nspawn &> /dev/null || install-packages systemd-container
   sudo systemd-nspawn -q -M ocitysmap --chdir=/root "$@"
@@ -109,6 +113,7 @@ function setup-ocitysmap {
   install-pip-packages colour pluginbase
   sudo ls /var/lib/machines/ocitysmap/root/ocitysmap &> /dev/null || run-nspawn git -C /root clone --depth=1 https://github.com/hholzgra/ocitysmap.git
   configure-ocitysmap
+  patch-ocitysmap
 }
 
 function setup-postgis {
