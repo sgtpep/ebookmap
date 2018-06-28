@@ -2,15 +2,14 @@
 set -eu
 
 function download-data {
+  remove-data
   local path=/var/lib/machines/ocitysmap/var/tmp/data$(get-extension "$1")
-  if ! sudo ls "$path" &> /dev/null; then
-    if command -v curl > /dev/null; then
-      sudo curl -L -o "$path"~ "$1"
-    elif command -v wget > /dev/null; then
-      sudo wget -O "$path"~ "$1"
-    fi
-    sudo mv "$path"{~,}
+  if command -v curl > /dev/null; then
+    sudo curl -L -o "$path"~ "$1"
+  elif command -v wget > /dev/null; then
+    sudo wget -O "$path"~ "$1"
   fi
+  sudo mv "$path"{~,}
 }
 
 function get-extension {
@@ -21,7 +20,7 @@ function get-extension {
 function import-data {
   sudo systemd-nspawn -q -M ocitysmap bash -eu"$-" << EOF
   /etc/init.d/postgresql start || /etc/init.d/postgresql start
-  echo maposmatic | osm2pgsql -Wc -H localhost -U maposmatic -d maposmatic -k /var/tmp/data* "$@"
+  echo maposmatic | osm2pgsql -Wc -H localhost -U maposmatic -d maposmatic -k /var/tmp/data* $@
 EOF
 }
 
