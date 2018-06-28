@@ -78,6 +78,7 @@ function main {
 
 function patch-ocitysmap {
   sudo sed -i 's/\bGeorgia /DejaVu /' /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/{draw_utils.py,indexlib/multi_page_renderer.py}
+  sudo sed -i 's/\( self\.items = \).*/\1[item for item in items or [] if item.label]/' /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/indexlib/commons.py
   sudo sed -i 's|\( *\).*\(\bstreet\.draw\b\)|\1file = open("./links.ps", "a"); file.write("[ /Page {} /Rect [{} {} {} {}] /SrcPg {} /Subtype /Link /ANN pdfmark\\n".format(street.page_number, 0, self.rendering_area_h - (self.rendering_area_y + offset_y), self.rendering_area_w, self.rendering_area_h - (self.rendering_area_y + offset_y + label_height), self.page_number)); file.close(); \2|' /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/indexlib/multi_page_renderer.py
   sudo sed -i 's/\( PRINT_SAFE_MARGIN_PT = \).*/\10/' /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/abstract_renderer.py
   sudo sed -i -f - /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/multi_page_renderer.py << \EOF
@@ -107,9 +108,8 @@ def generate(title, index_page, categories):
     file.write('[ /Title <{}> /DOCINFO pdfmark\n'.format(encode(title)))
     file.write('[ /Page {} /Title (Index) /OUT pdfmark\n'.format(index_page))
     for category in categories:
-      items = [item for item in category.items if item.label]
-      file.write('[ /Count {} /Title <{}> /OUT pdfmark\n'.format(len(items), encode(category.name)))
-      for item in items:
+      file.write('[ /Count {} /Title <{}> /OUT pdfmark\n'.format(len(category.items), encode(category.name)))
+      for item in category.items:
         file.write('[ /Page {} /Title <{}> /OUT pdfmark\n'.format(item.page_number, encode('{} ({})'.format(item.label, item.location_str.split(', ')[-1]))))
 EOF
 }
