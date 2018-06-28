@@ -84,6 +84,7 @@ function patch-ocitysmap {
   s/\( *\).*\(\bself\._render_\(blank\|front\)_page(\)/\1#\2/
   s/\( *\).*\(\bmap_canvas\.add_shape_file(\(shade\|shade_contour\)\b\)/\1False and \2/
   s/\( *\).*\(\bself\.rc\.stylesheet\.grid_line_width\b\)/\10.1 or \2/
+  s/\( width_adjust=\).*\(,\)/\10.9\2/
   s/\(\.render_page_number(ctx, \)3\b/\11/
   s/\( unicode(idx+\)4\b/\12/
   s/\( map_number+\)4\b/\12/
