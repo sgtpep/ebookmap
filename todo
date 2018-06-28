@@ -1,4 +1,3 @@
-document customizations
 try in ebook
   index in toc
   links
@@ -15,7 +14,7 @@ readme
   usage
     ./setup-container
     optionally ./customize-ocitysmap
-      read comments in ./customize-ocitysmap
+      read comments in ./customize-ocitysmap (lines starting with `#`)
     ./import-data https://....osm.pbf
     optionally ./query-name '...'
     ./render-map '...'
