@@ -1,5 +1,6 @@
-customize-ocitysmap
 recreate container
+render
+
 try in ebook
   index in toc
   links
@@ -14,6 +15,11 @@ readme
     systemd-nspawn
     debootstrap if not debian/ubuntu/arch
   usage
+    ./setup-container
+    optionally ./customize-ocitysmap
+    ./import-data https://....osm.pbf
+    optionally ./query-name '...'
+    ./render-map '...'
   cleanup
   features
     vector
