@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 set -eu
 
-function download-data {
+function clear-data {
   sudo sh -c 'rm -f /var/lib/machines/ocitysmap/var/tmp/data*'
+}
+
+function download-data {
+  clear-data
   local extension=$(get-extension "$1")
   if command -v curl > /dev/null; then
     sudo curl -L -o /var/lib/machines/ocitysmap/var/tmp/data"$extension" "$1"
@@ -26,6 +30,7 @@ EOF
 function main {
   download-data "${1?A URL is required.}"
   import-data
+  clear-data
 }
 
 main "$@"
