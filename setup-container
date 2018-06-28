@@ -94,6 +94,8 @@ function patch-ocitysmap {
   s/\( *\).*\(\mpsir = MultiPageStreetIndexRenderer\b\)/\1import toc; toc.generate(self.rc.title.capitalize(), map_number + 3, self.index_categories); \2/
   s/\( *\).*\(\bself\._render_overview_page\b\)/\1open('.\/links.ps', 'w').close(); \2/
   s|\( *\).*\(\bdraw_utils\.draw_text_adjusted(ctx, unicode(idx\b\)|\1file = open('./links.ps', 'a'); file.write('[ /Page {} /Rect [{} {} {} {}] /SrcPg {} /Subtype /Link /ANN pdfmark\\n'.format(idx + 2, x - w / 2, area_height_dots - y - h / 2, x + w / 2, area_height_dots - y + h / 2, 1)); file.close(); \2|
+  s/\(_arrow = \).*\(self\.page_disposition\b\)/\1arrow = \2/
+  s|\( *\).*\(\bself\._draw_arrow\b\)|\1file = open('./links.ps', 'a'); file.write('[ /Page {} /Rect [{} {} {} {}] /SrcPg {} /Subtype /Link /ANN pdfmark\\n'.format(arrow + nb_previous_pages, ctx.user_to_device(0, 0)[0] - 15, self._usable_area_height_pt - ctx.user_to_device(0, 0)[1] - 15, ctx.user_to_device(0, 0)[0] + 30, self._usable_area_height_pt - ctx.user_to_device(0, 0)[1] + 30, map_number + 2)); file.close(); \2|
 EOF
   sudo sed -i "s/\(\[\).*\(('Din A4'\)/\1('Din A5', 148, 210), \2/" /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/__init__.py
   sudo tee /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/toc.py > /dev/null << \EOF
