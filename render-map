@@ -22,7 +22,7 @@ function render-map {
     set -- -t "$name" --osmid="$(sudo -i -u postgres psql -A -c "SELECT osm_id FROM planet_osm_polygon WHERE name ILIKE '\''%$name%'\'' LIMIT 1" -d maposmatic | sed -n '2p')" "$@"
   fi
   ./render.py -l multi_page --paper-format="Din A5" "$@"
-  gs -o ./map.pdf -sDEVICE=pdfwrite ./citymap.pdf ./toc.ps
+  gs -o ./map.pdf -sDEVICE=pdfwrite ./citymap.pdf ./links.ps ./toc.ps
   ' -- "$@"
 }
 
