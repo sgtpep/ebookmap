@@ -66,7 +66,7 @@ def generate(title, index_page, categories):
     if categories:
       file.write('[ /Page {} /Title (Index) /OUT pdfmark\n'.format(index_page))
     for category in categories:
-      file.write('[ /Count {} /Title <{}> /OUT pdfmark\n'.format(len(category.items), encode(category.name)))
+      file.write('[ /Count {} /Page {} /Title <{}> /OUT pdfmark\n'.format(len(category.items), index_page, encode(category.name)))
       for item in category.items:
         file.write('[ /Page {} /Title <{}> /OUT pdfmark\n'.format(item.page_number, encode('{} ({})'.format(item.label, item.location_str.split(', ')[-1]))))
 EOF
