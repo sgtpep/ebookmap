@@ -29,18 +29,18 @@ function patch-ocitysmap {
   # remove page margins
   sudo sed -i 's/\( PRINT_SAFE_MARGIN_PT = \).*/\10/' /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/abstract_renderer.py
   sudo sed -i -f - /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/multi_page_renderer.py << \EOF
+  s/\( *\).*\(\bself\._render_overview_page\b\)/\1open('.\/links.ps', 'w').close(); open('.\/toc.ps', 'w').close(); \2/
+  # add the title to metadata and add the index item to TOC
+  s|\( *\).*\(\mpsir = MultiPageStreetIndexRenderer\b\)|\1file = open('./toc.ps', 'a'); file.write('[ /Title <{}> /DOCINFO pdfmark\\n[ /Page {} /Title (Index) /OUT pdfmark\\n'.format(''.join('{:02X}'.format(ord(byte)) for byte in '\\xfe\\xff' + self.rc.title.encode('utf-16be')), map_number + 3 if self.index_categories else 1)); file.close(); \2|
   # output the title and copyright on the overview page
   s/\( *\).*\(\bself\._draw_overview_labels\b\)/\1ctx.save(); ctx.set_font_size(18); ctx.select_font_face('Droid Sans', cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD); draw_utils.draw_simpletext_center(ctx, self.rc.title, self._usable_area_width_pt \/ 2, 30); ctx.restore(); draw_utils.draw_simpletext_center(ctx, '© OpenStreetMap contributors, CC-BY-SA', self._usable_area_width_pt \/ 2, self._usable_area_height_pt - 30); \2/
-  # remove grey areas from the page edges
+  # remove the grey areas from the page edges
   s/\( *\).*\(\bmap_canvas\.add_shape_file(\(shade\|shade_contour\)\b\)/\1False and \2/
   # make grid lines thinier
   s/\( *\).*\(\bself\.rc\.stylesheet\.grid_line_width\b\)/\10.1 or \2/
   # shift arrow text slightly to the right
   s/\( width_adjust=\).*\(,\)/\10.9\2/
-  # generate TOC
-  s/\( *\).*\(\mpsir = MultiPageStreetIndexRenderer\b\)/\1import toc; toc.generate(self.rc.title, map_number + 3, self.index_categories); \2/
   # make overview rectangles clickable
-  s/\( *\).*\(\bself\._render_overview_page\b\)/\1open('.\/links.ps', 'w').close(); \2/
   s|\( *\).*\(\bdraw_utils\.draw_text_adjusted(ctx, unicode(idx\b\)|\1file = open('./links.ps', 'a'); file.write('[ /Page {} /Rect [{} {} {} {}] /SrcPg {} /Subtype /Link /ANN pdfmark\\n'.format(idx + 2, x - w / 2, area_height_dots - y - h / 2, x + w / 2, area_height_dots - y + h / 2, 1)); file.close(); \2|
   # make page arrows clickable
   s/\(_arrow = \).*\(self\.page_disposition\b\)/\1arrow = \2/
@@ -55,20 +55,11 @@ function patch-ocitysmap {
   s/\(  map_number+\)5/\13/
   s/\( page_number=(i + \)4/\12/
 EOF
+  sudo sed -i -f - /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/indexlib/multi_page_renderer.py << \EOF
+  # add index categories to TOC
+  s|\( *\).*\(\bcategory\.draw\b\)|\1file = open('./toc.ps', 'a'); file.write('[ /Page {} /Title <{}> /OUT pdfmark\\n'.format(self.page_number, ''.join('{:02X}'.format(ord(byte)) for byte in '\\xfe\\xff' + category.name.encode('utf-16be')))); file.close(); \2|
   # make index items clickable
-  sudo sed -i 's|\( *\).*\(\bstreet\.draw\b\)|\1file = open("./links.ps", "a"); file.write("[ /Page {} /Rect [{} {} {} {}] /SrcPg {} /Subtype /Link /ANN pdfmark\\n".format(street.page_number, 0, self.rendering_area_h - (self.rendering_area_y + offset_y), self.rendering_area_w, self.rendering_area_h - (self.rendering_area_y + offset_y + label_height), self.page_number)); file.close(); \2|' /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/indexlib/multi_page_renderer.py
-  sudo tee /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/toc.py > /dev/null << \EOF
-def encode(string):
-  return ''.join('{:02X}'.format(ord(byte)) for byte in '\xfe\xff' + string.encode('utf-16-be'))
-def generate(title, index_page, categories):
-  with open('./toc.ps', 'w') as file:
-    file.write('[ /Title <{}> /DOCINFO pdfmark\n'.format(encode(title)))
-    if categories:
-      file.write('[ /Page {} /Title (Index) /OUT pdfmark\n'.format(index_page))
-    for category in categories:
-      file.write('[ /Count {} /Page {} /Title <{}> /OUT pdfmark\n'.format(len(category.items), index_page, encode(category.name)))
-      for item in category.items:
-        file.write('[ /Page {} /Title <{}> /OUT pdfmark\n'.format(item.page_number, encode('{} ({})'.format(item.label, item.location_str.split(', ')[-1]))))
+  s|\( *\).*\(\bstreet\.draw\b\)|\1file = open('./links.ps', 'a'); file.write('[ /Page {} /Rect [{} {} {} {}] /SrcPg {} /Subtype /Link /ANN pdfmark\\n'.format(street.page_number, 0, self.rendering_area_h - (self.rendering_area_y + offset_y), self.rendering_area_w, self.rendering_area_h - (self.rendering_area_y + offset_y + label_height), self.page_number)); file.close(); \2|
 EOF
 }
 
