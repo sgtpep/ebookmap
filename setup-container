@@ -9,6 +9,7 @@ function bootstrap-container {
       return 1
     fi
   fi
+  sudo sh -c 'rm -fr /var/lib/machines/ocitysmap/var/cache/apt/archives/*.deb'
 }
 
 function configure-apt {
