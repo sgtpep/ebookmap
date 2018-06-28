@@ -21,10 +21,10 @@ function configure-hosts {
 
 function configure-mapnik {
   sudo ls /var/lib/machines/ocitysmap/root/mapnik/inc/datasource-settings.xml.inc &> /dev/null || run-nspawn-bash -c 'cd ./mapnik && python ./generate_xml.py --dbname=maposmatic --host=localhost --password=maposmatic --port=5432 --user=maposmatic'
-  sudo sed -i 's/\(&maxscale_zoom\)17/\115/; s/\(<TextSymbolizer \)\(size\)/\1halo-radius="1" \2/' /var/lib/machines/ocitysmap/root/mapnik/inc/layer-addressing.xml.inc
-  sudo sed -i 's/\( \)\(<Filter>\[amenity\] = '\''parking'\''\)/\1\&minscale_zoom1;\2/' /var/lib/machines/ocitysmap/root/mapnik/inc/layer-amenity-points.xml.inc
-  sudo sed -i 's/^&layer-shapefiles;$/<!--\0-->/' /var/lib/machines/ocitysmap/root/mapnik/osm.xml
-  sudo perl -0p -e 's/(<Filter>\[highway\] = '\''unclassified'\''.+?&minscale_zoom)15(.+?<TextSymbolizer )(size)/${1}16$2allow-overlap="true" $3/s' -i /var/lib/machines/ocitysmap/root/mapnik/osm.xml
+  sudo sed -i 's/\(&maxscale_zoom\)17/\115/; s/\(<TextSymbolizer \).*\(\bsize\)/\1halo-radius="1" \2/' /var/lib/machines/ocitysmap/root/mapnik/inc/layer-addressing.xml.inc
+  sudo sed -i 's/\(^ *\).*\(<Filter>\[amenity\] = '\''parking'\''\)/\1\&minscale_zoom1;\2/' /var/lib/machines/ocitysmap/root/mapnik/inc/layer-amenity-points.xml.inc
+  sudo sed -i 's/^&layer-shapefiles;/<!--\0-->/' /var/lib/machines/ocitysmap/root/mapnik/osm.xml
+  sudo perl -0p -e 's/(<Filter>\[highway\] = '\''unclassified'\''.+?&minscale_zoom)\d+(.+?<TextSymbolizer ).*?(\bsize)/${1}16$2allow-overlap="true" $3/s' -i /var/lib/machines/ocitysmap/root/mapnik/osm.xml
 }
 
 function configure-ocitysmap {
@@ -32,7 +32,7 @@ function configure-ocitysmap {
   sudo sed -i -f - /var/lib/machines/ocitysmap/root/.ocitysmap.conf << \EOF
   s/\(^available_stylesheets: \).*/\1stylesheet_osm1/
   s/\(^password=\).*/\1maposmatic/
-  s|\(^path: \).*/mapnik.*|\1/root/mapnik/osm.xml|
+  s|\(^path: \).*/mapnik\b.*|\1/root/mapnik/osm.xml|
 EOF
 }
 
@@ -79,19 +79,19 @@ function main {
 function patch-ocitysmap {
   sudo sed -i 's/\( PRINT_SAFE_MARGIN_PT = \).*/\10/' /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/abstract_renderer.py
   sudo sed -i -f - /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/multi_page_renderer.py << \EOF
-  s/\(  \)\(self\._draw_overview_labels\b\)/\1ctx.set_font_size(16); draw_utils.draw_simpletext_center(ctx, self.rc.title.capitalize(), self._usable_area_width_pt \/ 2, 20); draw_utils.draw_simpletext_center(ctx, '© OpenStreetMap contributors, CC-BY-SA', self._usable_area_width_pt \/ 2, self._usable_area_height_pt - 20); \2/
-  s/\( \)\(self\._render_\(blank\|front\)_page(\)/\1#\2/
-  s/\(  \)\(map_canvas\.add_shape_file(\(shade\|shade_contour\)\b\)/\1False and \2/
-  s/\bself\.rc\.stylesheet\.grid_line_width\b/0.1/
+  s/\( *\).*\(\bself\._draw_overview_labels\b\)/\1ctx.set_font_size(16); draw_utils.draw_simpletext_center(ctx, self.rc.title.capitalize(), self._usable_area_width_pt \/ 2, 20); draw_utils.draw_simpletext_center(ctx, '© OpenStreetMap contributors, CC-BY-SA', self._usable_area_width_pt \/ 2, self._usable_area_height_pt - 20); \2/
+  s/\( *\).*\(\bself\._render_\(blank\|front\)_page(\)/\1#\2/
+  s/\( *\).*\(\bmap_canvas\.add_shape_file(\(shade\|shade_contour\)\b\)/\1False and \2/
+  s/\( *\).*\(\bself\.rc\.stylesheet\.grid_line_width\b\)/\10.1 or \2/
   s/\(\.render_page_number(ctx, \)3\b/\11/
   s/\( unicode(idx+\)4\b/\12/
   s/\( map_number+\)4\b/\12/
   s/\( nb_previous_pages = \)4/\12/
   s/\(  map_number+\)5/\13/
   s/\( page_number=(i + \)4/\12/
-  s/\(  \)\(mpsir = MultiPageStreetIndexRenderer\b\)/\1import toc; toc.generate(self.index_categories); \2/
+  s/\( *\).*\(\mpsir = MultiPageStreetIndexRenderer\b\)/\1import toc; toc.generate(self.index_categories); \2/
 EOF
-  sudo sed -i "s/\(\[\)\(('Din A4'\)/\1('Din A5', 148, 210), \2/" /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/__init__.py
+  sudo sed -i "s/\(\[\).*\(('Din A4'\)/\1('Din A5', 148, 210), \2/" /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/__init__.py
   sudo tee /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/toc.py > /dev/null << \EOF
 def encode(string):
   return ''.join('{:02X}'.format(ord(byte)) for byte in '\xfe\xff' + string.encode('utf-16-be'))
