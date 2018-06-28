@@ -1,8 +1,5 @@
-map in english
-  https://help.openstreetmap.org/questions/21784/render-place-name-in-two-languages-with-mapnik
-
-sceenshots
 sample pdf
+sceenshots
 try the whole city
 readme
   requirements
@@ -17,6 +14,9 @@ readme
     ./import-data https://....osm.pbf
       https://download.bbbike.org/osm/bbbike/
       https://download.geofabrik.de/
+      http://download.openstreetmap.fr/extracts/
+    optionally ./translate-data
+      replaces name with name:en
     optionally ./query-name '...'
     ./render-map '...'
   cleanup
