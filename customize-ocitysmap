@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+set -eu
+
+function customize-stylesheet {
+  sudo sed -i 's/\(&maxscale_zoom\)17/\115/; s/\(<TextSymbolizer \).*\(\bsize\)/\1halo-radius="1" \2/' /var/lib/machines/ocitysmap/root/mapnik/inc/layer-addressing.xml.inc
+  sudo sed -i 's/\(^ *\).*\(<Filter>\[amenity\] = '\''parking'\''\)/\1\&minscale_zoom1;\2/' /var/lib/machines/ocitysmap/root/mapnik/inc/layer-amenity-points.xml.inc
+  sudo perl -0p -e 's/(<Filter>\[highway\] = '\''unclassified'\''.+?&minscale_zoom)\d+(.+?<TextSymbolizer ).*?(\bsize)/${1}16$2allow-overlap="true" $3/s' -i /var/lib/machines/ocitysmap/root/mapnik/osm.xml
+}
+
+function main {
+  customize-stylesheet
+  patch-ocitysmap
+}
+
+function patch-ocitysmap {
+  sudo sed -i 's/\bGeorgia /DejaVu /' /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/{draw_utils.py,indexlib/multi_page_renderer.py}
+  sudo sed -i 's/\( self\.items = \).*/\1[item for item in items or [] if item.label]/' /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/indexlib/commons.py
+  sudo sed -i 's|\( *\).*\(\bstreet\.draw\b\)|\1file = open("./links.ps", "a"); file.write("[ /Page {} /Rect [{} {} {} {}] /SrcPg {} /Subtype /Link /ANN pdfmark\\n".format(street.page_number, 0, self.rendering_area_h - (self.rendering_area_y + offset_y), self.rendering_area_w, self.rendering_area_h - (self.rendering_area_y + offset_y + label_height), self.page_number)); file.close(); \2|' /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/indexlib/multi_page_renderer.py
+  sudo sed -i 's/\( PRINT_SAFE_MARGIN_PT = \).*/\10/' /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/abstract_renderer.py
+  sudo sed -i -f - /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/multi_page_renderer.py << \EOF
+  s/\( *\).*\(\bself\._draw_overview_labels\b\)/\1ctx.save(); ctx.set_font_size(16); draw_utils.draw_simpletext_center(ctx, self.rc.title, self._usable_area_width_pt \/ 2, 30); ctx.restore(); draw_utils.draw_simpletext_center(ctx, '© OpenStreetMap contributors, CC-BY-SA', self._usable_area_width_pt \/ 2, self._usable_area_height_pt - 30); \2/
+  s/\( *\).*\(\bself\._render_\(blank\|front\)_page(\)/\1#\2/
+  s/\( *\).*\(\bmap_canvas\.add_shape_file(\(shade\|shade_contour\)\b\)/\1False and \2/
+  s/\( *\).*\(\bself\.rc\.stylesheet\.grid_line_width\b\)/\10.1 or \2/
+  s/\( width_adjust=\).*\(,\)/\10.9\2/
+  s/\(\.render_page_number(ctx, \)3\b/\11/
+  s/\( unicode(idx+\)4\b/\12/
+  s/\( map_number+\)4\b/\12/
+  s/\( nb_previous_pages = \)4/\12/
+  s/\(  map_number+\)5/\13/
+  s/\( page_number=(i + \)4/\12/
+  s/\( *\).*\(\mpsir = MultiPageStreetIndexRenderer\b\)/\1import toc; toc.generate(self.rc.title, map_number + 3, self.index_categories); \2/
+  s/\( *\).*\(\bself\._render_overview_page\b\)/\1open('.\/links.ps', 'w').close(); \2/
+  s|\( *\).*\(\bdraw_utils\.draw_text_adjusted(ctx, unicode(idx\b\)|\1file = open('./links.ps', 'a'); file.write('[ /Page {} /Rect [{} {} {} {}] /SrcPg {} /Subtype /Link /ANN pdfmark\\n'.format(idx + 2, x - w / 2, area_height_dots - y - h / 2, x + w / 2, area_height_dots - y + h / 2, 1)); file.close(); \2|
+  s/\(_arrow = \).*\(self\.page_disposition\b\)/\1arrow = \2/
+  s|\( *\).*\(\bself\._draw_arrow\b\)|\1file = open('./links.ps', 'a'); file.write('[ /Page {} /Rect [{} {} {} {}] /SrcPg {} /Subtype /Link /ANN pdfmark\\n'.format(arrow + nb_previous_pages, ctx.user_to_device(0, 0)[0] - 15, self._usable_area_height_pt - ctx.user_to_device(0, 0)[1] - 15, ctx.user_to_device(0, 0)[0] + 30, self._usable_area_height_pt - ctx.user_to_device(0, 0)[1] + 30, map_number + 2)); file.close(); \2|
+EOF
+  sudo tee /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/toc.py > /dev/null << \EOF
+def encode(string):
+  return ''.join('{:02X}'.format(ord(byte)) for byte in '\xfe\xff' + string.encode('utf-16-be'))
+def generate(title, index_page, categories):
+  with open('./toc.ps', 'w') as file:
+    file.write('[ /Title <{}> /DOCINFO pdfmark\n'.format(encode(title)))
+    file.write('[ /Page {} /Title (Index) /OUT pdfmark\n'.format(index_page))
+    for category in categories:
+      file.write('[ /Count {} /Title <{}> /OUT pdfmark\n'.format(len(category.items), encode(category.name)))
+      for item in category.items:
+        file.write('[ /Page {} /Title <{}> /OUT pdfmark\n'.format(item.page_number, encode('{} ({})'.format(item.label, item.location_str.split(', ')[-1]))))
+EOF
+}
+
+main "$@"
