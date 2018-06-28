@@ -1,4 +1,3 @@
-[ /Page ? /Title (Index) /OUT pdfmark
 [ /Title <...> /DOCINFO pdfmark
 clickable links
   sudo systemd-nspawn -M ocitysmap --chdir=/root gs -o ./map.pdf -sDEVICE=pdfwrite -c '[ /Page 2 /Rect [0 425 295 465] /SrcPg 1 /Subtype /Link /ANN pdfmark' -f ./ocitysmap/citymap.pdf; sudo cp /var/lib/machines/ocitysmap/root/map.pdf ~/Downloads/map2.pdf
