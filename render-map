@@ -2,15 +2,21 @@
 set -eu
 
 function copy-output {
-  mkdir -p ~/Downloads
-  sudo cp /var/lib/machines/ocitysmap/root/ocitysmap/citymap.pdf ~/Downloads/map.pdf
-  sudo chown "$USER": ~/Downloads/map.pdf
-  echo 'Output: ~/Downloads/map.pdf'
+  if [[ $1 == -* ]]; then
+    local name=map
+  else
+    local name=$1
+  fi
+  local path=~/Downloads/$name.pdf
+  mkdir -p "${path%/*}"
+  sudo cp /var/lib/machines/ocitysmap/root/ocitysmap/citymap.pdf "$path"
+  sudo chown "$USER": "$path"
+  echo "Output: $path"
 }
 
 function main {
   render-map "${@?An argument is required.}"
-  copy-output
+  copy-output "$1"
 }
 
 function render-map {
