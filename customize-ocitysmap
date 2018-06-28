@@ -22,6 +22,8 @@ function main {
 function patch-ocitysmap {
   # don't use a serif font
   sudo sed -i 's/\bGeorgia /DejaVu /' /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/{draw_utils.py,indexlib/multi_page_renderer.py}
+  # outline text on the overview page
+  sudo sed -i 's/\( *\).*\(\bctx\.show_text\b\)/\1point = ctx.get_current_point(); ctx.set_source_rgba(1, 1, 1, 0.8); ctx.text_path(text); ctx.stroke(); ctx.move_to(*point); ctx.set_source_rgba(0, 0, 0, 0.8); \2/' /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/draw_utils.py
   # hide nameless items from the index and TOC
   sudo sed -i 's/\( self\.items = \).*/\1[item for item in items or [] if item.label]/' /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/indexlib/commons.py
   # remove page margins
