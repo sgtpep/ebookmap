@@ -1,17 +1,15 @@
 #!/usr/bin/env bash
 set -eu
 
-function clear-data {
-  sudo sh -c 'rm -f /var/lib/machines/ocitysmap/var/tmp/data*'
-}
-
 function download-data {
-  clear-data
-  local extension=$(get-extension "$1")
-  if command -v curl > /dev/null; then
-    sudo curl -L -o /var/lib/machines/ocitysmap/var/tmp/data"$extension" "$1"
-  elif command -v wget > /dev/null; then
-    sudo wget -O /var/lib/machines/ocitysmap/var/tmp/data"$extension" "$1"
+  local path=/var/lib/machines/ocitysmap/var/tmp/data$(get-extension "$1")
+  if ! sudo ls "$path" &> /dev/null; then
+    if command -v curl > /dev/null; then
+      sudo curl -L -o "$path"~ "$1"
+    elif command -v wget > /dev/null; then
+      sudo wget -O "$path"~ "$1"
+    fi
+    sudo mv "$path"{~,}
   fi
 }
 
@@ -21,16 +19,22 @@ function get-extension {
 }
 
 function import-data {
-  sudo systemd-nspawn -q -M ocitysmap bash -eu"$-" << \EOF
+  sudo systemd-nspawn -q -M ocitysmap bash -eu"$-" << EOF
   /etc/init.d/postgresql start || /etc/init.d/postgresql start
-  echo maposmatic | osm2pgsql -Wc -H localhost -U maposmatic -d maposmatic -k /var/tmp/data*
+  echo maposmatic | osm2pgsql -Wc -H localhost -U maposmatic -d maposmatic -k /var/tmp/data* "$@"
 EOF
 }
 
 function main {
-  download-data "${1?A URL is required.}"
-  import-data
-  clear-data
+  local url=${1?A URL is required.}
+  shift
+  download-data "$url"
+  import-data "$@"
+  remove-data
+}
+
+function remove-data {
+  sudo sh -c 'rm -f /var/lib/machines/ocitysmap/var/tmp/data*'
 }
 
 main "$@"
