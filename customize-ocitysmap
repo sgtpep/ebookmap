@@ -63,7 +63,8 @@ def encode(string):
 def generate(title, index_page, categories):
   with open('./toc.ps', 'w') as file:
     file.write('[ /Title <{}> /DOCINFO pdfmark\n'.format(encode(title)))
-    file.write('[ /Page {} /Title (Index) /OUT pdfmark\n'.format(index_page))
+    if categories:
+      file.write('[ /Page {} /Title (Index) /OUT pdfmark\n'.format(index_page))
     for category in categories:
       file.write('[ /Count {} /Title <{}> /OUT pdfmark\n'.format(len(category.items), encode(category.name)))
       for item in category.items:
