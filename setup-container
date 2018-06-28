@@ -77,6 +77,7 @@ function main {
 }
 
 function patch-ocitysmap {
+  sudo sed -i 's/\bGeorgia /DejaVu /' /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/{draw_utils.py,indexlib/multi_page_renderer.py}
   sudo sed -i 's/\( PRINT_SAFE_MARGIN_PT = \).*/\10/' /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/abstract_renderer.py
   sudo sed -i -f - /var/lib/machines/ocitysmap/root/ocitysmap/ocitysmap/layoutlib/multi_page_renderer.py << \EOF
   s/\( *\).*\(\bself\._draw_overview_labels\b\)/\1ctx.save(); ctx.set_font_size(16); draw_utils.draw_simpletext_center(ctx, self.rc.title.capitalize(), self._usable_area_width_pt \/ 2, 30); ctx.restore(); draw_utils.draw_simpletext_center(ctx, '© OpenStreetMap contributors, CC-BY-SA', self._usable_area_width_pt \/ 2, self._usable_area_height_pt - 30); \2/
