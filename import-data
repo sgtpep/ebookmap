@@ -18,9 +18,9 @@ function get-extension {
 }
 
 function import-data {
-  sudo systemd-nspawn -q -M ocitysmap bash -eu"$-" << EOF
+  sudo systemd-nspawn -q -M ocitysmap env ARGS=$@ bash -eu"$-" << \EOF
   /etc/init.d/postgresql start || /etc/init.d/postgresql start
-  echo maposmatic | osm2pgsql -Wck -H localhost -U maposmatic -d maposmatic /var/tmp/data* $@
+  echo maposmatic | osm2pgsql -Wck -H localhost -U maposmatic -d maposmatic /var/tmp/data* $ARGS
 EOF
 }
 
