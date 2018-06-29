@@ -1,6 +1,6 @@
 # ebookmap
 
-Create maps optimized for [eBook readers](https://en.wikipedia.org/wiki/E-reader) using data from [OpenStreetMap](https://www.openstreetmap.org/).
+Create maps optimized for [eBook readers](https://en.wikipedia.org/wiki/E-reader) using the data from [OpenStreetMap](https://www.openstreetmap.org/).
 
 ## Screenshots
 
