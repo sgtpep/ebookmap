@@ -9,9 +9,11 @@ function copy-output {
   fi
   local path=~/Downloads/$name.pdf
   mkdir -p "${path%/*}"
-  sudo cp /var/lib/machines/ocitysmap/root/ocitysmap/citymap.pdf "$path"
-  sudo chown "$USER": "$path"
-  echo "Output: ~${path#~}"
+  if sudo ls /var/lib/machines/ocitysmap/root/ocitysmap/citymap.pdf &> /dev/null; then
+    sudo mv /var/lib/machines/ocitysmap/root/ocitysmap/citymap.pdf "$path"
+    sudo chown "$USER": "$path"
+    echo "Output: ~${path#~}"
+  fi
 }
 
 function main {
@@ -21,7 +23,8 @@ function main {
 
 function render-map {
   sudo systemd-nspawn -q -M ocitysmap --chdir=/root/ocitysmap bash -eu"$-" -c '
-  /etc/init.d/postgresql start
+  [[ ${1-} != -h && ${1-} != --help ]] || help=1
+  [[ ${help-} ]] || /etc/init.d/postgresql start
   if [[ ${1-} && $1 != -* ]]; then
     name=$1
     shift
@@ -34,7 +37,7 @@ function render-map {
     fi
   fi
   ./render.py -l multi_page --paper-format="Din A5" "$@"
-  if [[ -f ./links.ps && -f ./toc.ps ]]; then
+  if [[ ! ${help-} && -f ./links.ps && -f ./toc.ps ]]; then
     gs -o ./map.pdf -sDEVICE=pdfwrite ./citymap.pdf ./links.ps ./toc.ps
     mv ./map.pdf ./citymap.pdf
   fi
