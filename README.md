@@ -81,6 +81,62 @@ cd ./ebookmap
  313994014 | West Side Community Garden
 ```
 
+- Now you can actually render a map of some place using this command passing an exact name as an argument:
+
+```shell
+./render-map 'Upper West Side'
+```
+
+You can also pass `osm_id` instead of a name: `./render-map -t 'Upper West Side' --osmid=-7218315`. You can also pass any additinal arguments (that `./render.py` of OcitySMaps supports). To see them all run: `./render-map -h`:
+
+```
+Usage: render.py [options] [-b <lat1,long1 lat2,long2>|--osmid <osmid>]
+
+Options:
+  --version             show program's version number and exit
+  -h, --help            show this help message and exit
+  -C FILE, --config=FILE
+                        specify the location of the config file.
+  -p PREFIX, --prefix=PREFIX
+                        set a prefix to the generated file names. Defaults to
+                        "citymap".
+  -f FMT, --format=FMT  specify the output formats. Supported file formats:
+                        svg, svgz, pdf, ps, ps.gz, png, and csv. Defaults to
+                        PDF. May be specified multiple times.
+  -t TITLE, --title=TITLE
+                        specify the title displayed in the output files.
+  --osmid=OSMID         OSM ID representing the polygon of the city to render.
+  -b LAT1,LON1 LAT2,LON2, --bounding-box=LAT1,LON1 LAT2,LON2
+                        bounding box (EPSG: 4326).
+  -L LANGUAGE_CODE, --language=LANGUAGE_CODE
+                        language to use when generating the index
+                        (default=en_US.UTF-8). The map language is driven by
+                        the system' locale setting.
+  -s NAME, --stylesheet=NAME
+                        specify which stylesheet to use. Defaults to the first
+                        specified in the configuration file.
+  --overlay=NAME        comma separated list of overlay stylesheets to use.
+                        Defaults to none
+  -l NAME, --layout=NAME
+                        specify which layout to use. Available layouts are:
+                        plain (Full-page layout without index.),
+                        single_page_index_bottom (Full-page layout with the
+                        index at the bottom.), single_page_index_side (Full-
+                        page layout with the index on the side.), multi_page
+                        (A multi-page layout.). Defaults to plain.
+  --paper-format=FMT    set the output paper format. Either "default", or one
+                        of Best fit, Din A5, Din A4, US letter, Din A3, Din
+                        A2, Din A1, Din A0, 2x A0.
+  --orientation=ORIENTATION
+                        set the output paper orientation. Either "portrait" or
+                        "landscape". Defaults to portrait.
+  --poi-file=FILE       provide a file containing POI information to create an
+                        index instead of auto-generating it.
+  --gpx-file=FILE       a GPX track to be put on top of the rendered mapr.
+```
+
+To remove the installed container simply run: `sudo rm -r /var/lib/machines/ocitysmap`
+
 ## OpenStreetMap data extracts
 
 - https://download.bbbike.org/osm/bbbike/

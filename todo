@@ -1,11 +1,3 @@
-usage
-  optionally ./query-name '...'
-  ./render-map '...'
-  ./render-map -t 'title' --osmid=-123123
-  ./render-map --help
-    show
-  cleanup
-
 grammarly
 promote
   https://wiki.openstreetmap.org/wiki/OSM_on_Paper
