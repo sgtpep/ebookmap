@@ -58,6 +58,29 @@ cd ./ebookmap
 ./translate-data
 ```
 
+- You need to know either an exact OSM object name, or its ID. You can query them from the container's database with some text:
+
+```shell
+./query-name 'West Side'
+```
+
+```
+  osm_id   |               name
+-----------+-----------------------------------
+ 412090769 | West Side High School
+ 310223934 | West Side Avenue Park and Ride
+ 265258258 | West Side Jewish Center
+ 433102608 | West Side Yard
+ 265329555 | West Side Home Center
+ 241826154 | Apple Store, Upper West Side
+ 269297172 | West Side Institutional Synagogue
+ 413886376 | West Side Tennis Club
+ 274668743 | West Side Bar & Grill
+  39648150 | West Side Park
+  -7218315 | Upper West Side
+ 313994014 | West Side Community Garden
+```
+
 ## OpenStreetMap data extracts
 
 - https://download.bbbike.org/osm/bbbike/
