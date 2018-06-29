@@ -24,3 +24,10 @@ The original PDF file (paper size A5): https://www.scribd.com/document/382852184
 - A [systemd](https://en.wikipedia.org/wiki/Systemd)-based Linux system ([Debian](https://www.debian.org/)/[Ubuntu](https://www.ubuntu.com/) and derivatives, [Arch Linux](https://www.archlinux.org/), etc.)
 - Minimum free 2GB of disk space.
 - These packages need to be installed manually unless your system is not Debian, Ubuntu, or Arch Linux: `debootstrap`, `systemd-nspawn`.
+
+## Resources
+
+- MapOSMatic, a web service that allows you to generate maps of cities using the OpenStreetMap data: https://maposmatic.osm-baustelle.de/
+- Source code of OcitySMaps, a command-line tool behind the MapOSMatic web service: http://git.savannah.gnu.org/cgit/maposmatic/ocitysmap.git, https://github.com/hholzgra/ocitysmap
+- MapOSMatic on [OpenStreetMap Wiki](https://wiki.openstreetmap.org/wiki/Main_Page): https://wiki.openstreetmap.org/wiki/MapOSMatic
+- Other tools to generate printable maps from OpenStreetMap: https://wiki.openstreetmap.org/wiki/OSM_on_Paper
