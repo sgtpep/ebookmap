@@ -33,7 +33,7 @@ function patch-ocitysmap {
   # add the title to metadata and add the index item to TOC
   s|\( *\).*\(\mpsir = MultiPageStreetIndexRenderer\b\)|\1file = open('./toc.ps', 'a'); file.write('[ /Title <{}> /DOCINFO pdfmark\\n[ /Page {} /Title (Index) /OUT pdfmark\\n'.format(''.join('{:02X}'.format(ord(byte)) for byte in '\\xfe\\xff' + self.rc.title.encode('utf-16be')), map_number + 3 if self.index_categories else 1)); file.close(); \2|
   # output the title and copyright on the overview page
-  s/\( *\).*\(\bself\._draw_overview_labels\b\)/\1ctx.save(); ctx.set_font_size(18); ctx.select_font_face('Droid Sans', cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD); draw_utils.draw_simpletext_center(ctx, self.rc.title, self._usable_area_width_pt \/ 2, 30); ctx.restore(); draw_utils.draw_simpletext_center(ctx, '© OpenStreetMap contributors, CC-BY-SA', self._usable_area_width_pt \/ 2, self._usable_area_height_pt - 30); \2/
+  s/\( *\).*\(\bself\._draw_overview_labels\b\)/\1ctx.save(); ctx.set_font_size(16); ctx.select_font_face('Droid Sans', cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD); draw_utils.draw_simpletext_center(ctx, self.rc.title, self._usable_area_width_pt \/ 2, 30); ctx.restore(); draw_utils.draw_simpletext_center(ctx, '© OpenStreetMap contributors, CC-BY-SA', self._usable_area_width_pt \/ 2, self._usable_area_height_pt - 30); \2/
   # remove the grey areas from the page edges
   s/\( *\).*\(\bmap_canvas\.add_shape_file(\(shade\|shade_contour\)\b\)/\1False and \2/
   # make grid lines thinier
