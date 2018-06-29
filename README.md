@@ -10,6 +10,15 @@ A map of [Upper West Side, New York](https://www.openstreetmap.org/relation/8398
 
 The original PDF file (paper size A5): https://www.scribd.com/document/382852184/upper-west-side-new-york.
 
+## Features
+
+- All dependencies are encapsulated in a container which can be easily bootstrapped and used on almost any Linux system.
+- Resolution-independent scalable vector images.
+- The clickable overview page to quickly navigate to an area of interest.
+- Clickable page edges to navigate to adjacent pages.
+- The clickable Index page with a list of streets and objects.
+- Table of contents.
+
 ## Requirements
 
 - A [systemd](https://en.wikipedia.org/wiki/Systemd)-based Linux system ([Debian](https://www.debian.org/)/[Ubuntu](https://www.ubuntu.com/) and derivatives, [Arch Linux](https://www.archlinux.org/), etc.)
