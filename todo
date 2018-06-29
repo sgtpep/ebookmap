@@ -1,26 +1,12 @@
-requirements
-  2G min
-  linux
-  systemd-nspawn
-  debootstrap if not debian/ubuntu/arch
 usage
-  ./setup-container
-  optionally ./customize-ocitysmap
-    read comments in ./customize-ocitysmap (lines starting with `#`)
-  ./import-data https://....osm.pbf
-    https://download.bbbike.org/osm/bbbike/
-    https://download.geofabrik.de/
-    http://download.openstreetmap.fr/extracts/
-  optionally ./translate-data
-    replaces name with name:en
   optionally ./query-name '...'
   ./render-map '...'
-cleanup
-features
-  vector
-  clickable navigation
-  all dependencies encapsulated in container, containerized dependencies
-screenshots
-sample pdf
-credits and resources
-try the whole city
+  ./render-map -t 'title' --osmid=-123123
+  ./render-map --help
+    show
+  cleanup
+
+grammarly
+promote
+  https://wiki.openstreetmap.org/wiki/OSM_on_Paper
+  https://wiki.openstreetmap.org/wiki/MapOSMatic
