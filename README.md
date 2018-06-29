@@ -58,7 +58,7 @@ cd ./ebookmap
 ./translate-data
 ```
 
-- You need to know either an exact OSM name, or ID of an place you are interested in. You can query them from the container's database with some case-insensitive substring:
+- You need to know either an exact OSM name or ID of a place you are interested in. You can query them from the container's database with some case-insensitive substring:
 
 ```shell
 ./query-name 'west side'
@@ -81,7 +81,7 @@ cd ./ebookmap
  313994014 | West Side Community Garden
 ```
 
-- Now you can actually render a map of some place using this command passing an exact name as an argument:
+- Now you can actually render a map of any place using this command passing an exact name as an argument:
 
 ```shell
 ./render-map 'Upper West Side'
@@ -146,6 +146,6 @@ To remove the installed container simply run: `sudo rm -r /var/lib/machines/ocit
 ## Resources
 
 - MapOSMatic, a web service that allows you to generate maps of cities using the OpenStreetMap data: https://maposmatic.osm-baustelle.de/
-- Source code of OcitySMaps, a command-line tool behind the MapOSMatic web service: http://git.savannah.gnu.org/cgit/maposmatic/ocitysmap.git, https://github.com/hholzgra/ocitysmap
+- The source code of OcitySMaps, a command-line tool behind the MapOSMatic web service: http://git.savannah.gnu.org/cgit/maposmatic/ocitysmap.git, https://github.com/hholzgra/ocitysmap
 - MapOSMatic on OpenStreetMap Wiki: https://wiki.openstreetmap.org/wiki/MapOSMatic
 - Other tools to generate printable maps from OpenStreetMap: https://wiki.openstreetmap.org/wiki/OSM_on_Paper
