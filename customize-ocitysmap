@@ -37,7 +37,7 @@ function patch-ocitysmap {
   # remove the grey areas from the page edges
   s/\( *\).*\(\bmap_canvas\.add_shape_file(\(shade\|shade_contour\)\b\)/\1False and \2/
   # make grid lines thinier
-  s/\( *\).*\(\bself\.rc\.stylesheet\.grid_line_width\b\)/\10.1 or \2/
+  s/\( *\).*\(\bself\.rc\.stylesheet\.grid_line_width\b\)/\10.3 or \2/
   # shift arrow text slightly to the right
   s/\( width_adjust=\).*\(,\)/\10.9\2/
   # make overview rectangles clickable
