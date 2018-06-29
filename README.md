@@ -40,7 +40,7 @@ cd ./ebookmap
 ./setup-container
 ```
 
-- The next step can be omitted if you want to use OcitySMaps and the default Mapnik stylesheet as is. Otherwise, for better results on eBook readers apply customizations (you can read comments, lines started with `#`, in `./customize-ocitysmap` to learn about them):
+- The next step can be omitted if you want to use ocitysmap and the default Mapnik stylesheet as is. Otherwise, for better results on eBook readers apply customizations (you can read comments, lines started with `#`, in `./customize-ocitysmap` to learn about them):
 
 ```shell
 ./customize-ocitysmap
@@ -87,7 +87,7 @@ cd ./ebookmap
 ./render-map 'Upper West Side'
 ```
 
-You can also pass `osm_id` instead of a name: `./render-map -t 'Upper West Side' --osmid=-7218315`. You can also pass any additinal arguments (that `./render.py` of OcitySMaps supports). To see them all run: `./render-map -h`:
+You can also pass `osm_id` instead of a name: `./render-map -t 'Upper West Side' --osmid=-7218315`. You can also pass any additinal arguments (that `./render.py` of ocitysmap supports). To see them all run: `./render-map -h`:
 
 ```
 Usage: render.py [options] [-b <lat1,long1 lat2,long2>|--osmid <osmid>]
@@ -146,6 +146,6 @@ To remove the installed container simply run: `sudo rm -r /var/lib/machines/ocit
 ## Resources
 
 - MapOSMatic, a web service that allows you to generate maps of cities using the OpenStreetMap data: https://maposmatic.osm-baustelle.de/
-- The source code of OcitySMaps, a command-line tool behind the MapOSMatic web service: http://git.savannah.gnu.org/cgit/maposmatic/ocitysmap.git, https://github.com/hholzgra/ocitysmap
+- The source code of ocitysmap (Open City Street Map), a command-line tool behind the MapOSMatic web service: http://git.savannah.gnu.org/cgit/maposmatic/ocitysmap.git, https://github.com/hholzgra/ocitysmap
 - MapOSMatic on OpenStreetMap Wiki: https://wiki.openstreetmap.org/wiki/MapOSMatic
 - Other tools to generate printable maps from OpenStreetMap: https://wiki.openstreetmap.org/wiki/OSM_on_Paper
