@@ -59,7 +59,7 @@ EOF
   # add index categories to TOC
   s|\( *\).*\(\bcategory\.draw\b\)|\1file = open('./toc.ps', 'a'); file.write('[ /Page {} /Title <{}> /OUT pdfmark\\n'.format(self.page_number, ''.join('{:02X}'.format(ord(byte)) for byte in '\\xfe\\xff' + category.name.encode('utf-16be')))); file.close(); \2|
   # make index items clickable
-  s|\( *\).*\(\bstreet\.draw\b\)|\1file = open('./links.ps', 'a'); file.write('[ /Page {} /Rect [{} {} {} {}] /SrcPg {} /Subtype /Link /ANN pdfmark\\n'.format(street.page_number, 0, self.rendering_area_h - (self.rendering_area_y + offset_y), self.rendering_area_w, self.rendering_area_h - (self.rendering_area_y + offset_y + label_height), self.page_number)); file.close(); \2|
+  s|\( *\).*\(\bstreet\.draw\b\)|\1file = open('./links.ps', 'a'); file.write('[ /Page {} /Rect [{} {} {} {}] /SrcPg {} /Subtype /Link /ANN pdfmark\\n'.format(street.page_number, self.rendering_area_x + offset_x, self.rendering_area_h - (self.rendering_area_y + offset_y), self.rendering_area_x + offset_x + delta_x, self.rendering_area_h - (self.rendering_area_y + offset_y + label_height), self.page_number)); file.close(); \2|
 EOF
 }
 
