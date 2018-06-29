@@ -52,7 +52,7 @@ cd ./ebookmap
 ./import-data https://download.bbbike.org/osm/bbbike/NewYork/NewYork.osm.pbf
 ```
 
-- Default object names in the OpenStreetMap data are provided in local languages. If you want to see names in English run (note: not all objects on OpenStreetMap may have been translated to English, it depends on efforts of OpenStreetMap contributors):
+- Default object names in the OpenStreetMap data are provided in local languages. Run this command if you want to convert names to English (note: not all objects on OpenStreetMap may have been translated to English, it depends on efforts of OpenStreetMap contributors):
 
 ```shell
 ./translate-data
