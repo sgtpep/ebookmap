@@ -58,10 +58,10 @@ cd ./ebookmap
 ./translate-data
 ```
 
-- You need to know either an exact OSM object name, or its ID. You can query them from the container's database with some text:
+- You need to know either an exact OSM name, or ID of an place you are interested in. You can query them from the container's database with some case-insensitive substring:
 
 ```shell
-./query-name 'West Side'
+./query-name 'west side'
 ```
 
 ```
