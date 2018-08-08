@@ -23,7 +23,7 @@ The original PDF file (paper size A5): https://www.scribd.com/document/382852184
 
 - A [systemd](https://en.wikipedia.org/wiki/Systemd)-based Linux system ([Debian](https://www.debian.org/)/[Ubuntu](https://www.ubuntu.com/) and derivatives, [Arch Linux](https://www.archlinux.org/), etc.)
 - Minimum free 2GB of disk space.
-- These packages need to be installed manually unless your system is not Debian, Ubuntu, or Arch Linux: `debootstrap`, `systemd-nspawn`.
+- Presense of the following commands on your system: `debootstrap` (provided by the `debootstrap` on Debian, Ubuntu and Arch Linux) and `systemd-nspawn` (provided by the `systemd-container` package on Debian and Ubuntu; present on the base Arch Linux installation).
 
 ## Usage
 
